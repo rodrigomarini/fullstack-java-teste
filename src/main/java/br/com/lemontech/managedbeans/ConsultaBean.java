@@ -17,6 +17,7 @@ import br.com.lemontech.selfbooking.wsselfbooking.services.WsSelfBooking;
 import br.com.lemontech.selfbooking.wsselfbooking.services.WsSelfBookingService;
 import br.com.lemontech.selfbooking.wsselfbooking.services.request.PesquisarSolicitacaoRequest;
 import br.com.lemontech.selfbooking.wsselfbooking.services.response.PesquisarSolicitacaoResponse;
+import br.com.lemontech.service.ViagemSender;
 import br.com.lemontech.util.DateUtil;
 import br.com.lemontech.ws.validator.strategy.ResponseObject;
 import br.com.lemontech.ws.validator.ResponseValidator;
@@ -30,7 +31,12 @@ public class ConsultaBean {
 
 	@Inject
 	private WsSelfBookingService service;
+	
+	@Inject
+	private ViagemSender viagemSender;
+	
 	private List<Viagem> viagens = new ArrayList<Viagem>();
+	
 	private Integer row = 1;
 
 	/**
@@ -52,14 +58,13 @@ public class ConsultaBean {
 		pesquisarSolicitacao.setExibirRemarks(true);
 
 		WsSelfBooking port = service.getWsSelfBookingPort();
-
 		PesquisarSolicitacaoResponse response = port.pesquisarSolicitacao(KEY_CLIENT, USER_NAME, USER_PASSWORD, pesquisarSolicitacao);
-
 		processViagem(response);
 	}
 
 	/**
-	 * Método responsável por consolidar as informações de retorno do WS garantindo a integridades dos dados.
+	 * Método responsável por consolidar as informações de retorno do WS garantindo a integridades dos dados
+	 * e encaminhar os objetos processados para módulos e componentes conseguintes.
 	 * 
 	 * @param response Retorno do WS consumido
 	 */
@@ -82,7 +87,8 @@ public class ConsultaBean {
 					.cidadeOrigem(aereoSeguimento.getCidadeOrigem())
 					.cidadeDestino(aereoSeguimento.getCidadeDestino())
 					.build();
-
+			
+			viagemSender.send(viagem);
 			viagens.add(viagem);
 		}
 	}

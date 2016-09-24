@@ -1,13 +1,16 @@
 package br.com.lemontech.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import br.com.lemontech.util.DateUtil;
 
-public class Viagem {
+public class Viagem implements Serializable{
 
+	private static final long serialVersionUID = 592642092008099108L;
+	
 	private Integer idSolicitacao;
 	private String nomePassageiro;
 	private String ciaAerea;
