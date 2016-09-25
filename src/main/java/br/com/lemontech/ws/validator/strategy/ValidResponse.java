@@ -6,7 +6,7 @@ import br.com.lemontech.selfbooking.wsselfbooking.beans.aereo.AereoSeguimento;
 import br.com.lemontech.ws.validator.StatusConsultaWS;
 
 /**
- * Implementação da classe que contem objetos válidos do retorno ws lemontech 
+ * Classe que contém o retorno do ws lemontech com objetos considerados válidos 
  * 
  * @author Rodrigo Marini
  */

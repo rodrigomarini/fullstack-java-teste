@@ -6,7 +6,7 @@ import br.com.lemontech.ws.validator.StatusConsultaWS;
 import br.com.lemontech.ws.validator.strategy.ResponseObject;
 
 /**
- * Implementação da classe que contem objetos inválidos do retorno ws lemontech 
+ * Classe que contém o retorno do ws lemontech com objetos considerados inválidos
  * 
  * @author Rodrigo Marini
  */

@@ -4,7 +4,7 @@ import br.com.lemontech.selfbooking.wsselfbooking.beans.aereo.Aereo;
 import br.com.lemontech.selfbooking.wsselfbooking.beans.aereo.AereoSeguimento;
 
 /**
- * Abstração para objetos com valores de retorno do WS Lemontech 
+ * Abstração para objetos esperados no retorno do WS Lemontech 
  * 
  * @author Rodrigo Marini
  */

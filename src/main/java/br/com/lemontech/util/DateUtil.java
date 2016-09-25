@@ -42,14 +42,11 @@ public class DateUtil {
 	 * @return Date com mesmo valor do objeto recebido.
 	 */
 	public static final Date getDate(XMLGregorianCalendar date){
-
 		try {
-			Date d = new Date();
-
+			Date d = null;
 			if(date != null){
-				d.setTime(date.getMillisecond());
+				d = new Date(date.getMillisecond());
 			}
-
 			return d;
 		} catch (Exception e) {
 			logger.error("Problema ao converter data",e);
