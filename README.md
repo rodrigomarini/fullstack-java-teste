@@ -1,52 +1,72 @@
-# Por que trabalhar na Lemontech
+# Consulta de Viagens
 
-A Lemontech é uma empresa especializada no desenvolvimento de softwares que contribuem na Gestão das Viagens Corporativas.
-Têm como principais objetivos, reduzir custos e tornar os processos mais dinâmicos.
-O Sistema Lemontech, é utilizado por corporações e agências de viagens que buscam economia, eficiência e automação dos seus negócios.ditamos no poder da tecnologia para melhorar continuamente a vida das pessoas. 
+Aplicação JEE componentizada, no qual um componente é responsável por consumir o web service para consulta de viagens da Lemontech disponibilizando as informações numa fila para que outro componente faça a persistência no banco de dados.
 
-Se você tem espírito e comportamento empreendedor, muita disposição e proatividade para trabalhar em uma empresa em franca expansão, você é um forte candidato :)
+Resumidamente, o fluxo básico consiste em consumir os dados do serviço, efetuar uma validação do conteudo retornado e exibir na tela, aonde o usúario poderá:
 
-Como Desenvolvedor Full-stack você irá atuar no desenvolvimento de soluções em arquitetura Java Web MVC, Java EE, integrações com outros sistemas (SOAP, REST, JMS) e soluções escaláveis, participando de todo o processo de desenvolvimento, desde tomadas de decisões à codificação e testes.
+*  Visualizar o conteudo retornado pelo ws, além de um status adicional por registro com intuito de identificar se todos os objetos da hierarquia daquele registro (id solicitação) foram retornados pelo serviço consumido.
+* Executar por demanda novas chamadas ao serviço, navegando pelas telas de listagem através de páginação (20 registros por página)
 
-# O que preciso fazer?
+Após cada requisição, além de serem listados na tela, os dados são imediatamente encaminhados a uma fila responsável por entregar por meio de mensageria, os registros ao componente de persistência.
 
-Vamos ser práticos e diretos, se você quer trabalhar conosco siga os passos abaixo:
+# Arquitetura do Sistema
 
-* Faça um "fork" desse projeto para sua conta GitHub.
-* Implemente o desafio descrito no tópico abaixo.
-* Faça um push para seu repositório com o desafio implementado.
-* Envie um email para (rh@lemontech.com.br) avisando que finalizou o desafio com a url do seu fork.
-* Cruze os dedos e aguarde nosso contato.
+A arquitetura escolhida segue a especificação JEE 7, utilizando-se de grande parte dos recursos oferecidos.
+Para se beneficiar de um ambiente transacional totalmente gerenciado pelo servidor, foi escolhido o web server WildFly. Embora a configuração para esse ambiente seja mais complexa, contribuiu para a escolha o fato de que há grandes benefícios em termos de legibilidade e assertividade no código escrito.
 
-# O desafio (Consulta de Solicitações de Viagens)
+### Tecnologias
 
-Você deverá criar uma aplicação consumidora de nossa API de webservice para consultar viagens e persistir em banco de dados:
+* JDK 8
+* JEE 7
+* CDI 1.2
+* JTA 1.2
+* JPA 2.1
+* JSF 2.2
+* MAVEN 3.3
 
-Endpoint: https://treinamento.lemontech.com.br/wsselfbooking/WsSelfBookingService?wsdl
+### Banco de dados
 
-Arquitetura: Pode-se utilizar qualquer recurso da especificação JavaEE.
+* MySQL 5.5
 
-Consultar as viagens dos últimos 3 meses (utilizar método pesquisarSolicitacao).
+### Server
 
-Criar banco de dados / tabela para persistir as informações da viagem: Nome do Passageiro, CIA Aérea, Data/Hora de saida e Chegada, Cidades de origem e destino.
+* WildFly 8
+* HornetQ 2.4 (middleware mensageria)
 
-Segregar os Serviços de consulta ao WS e o de persistência no BD, imaginando que poderiam estar em ambiente distribuído e após consulta ao Webservice a viagem possa ser enviada de alguma forma para um local onde o serviço de persistência tenha acesso posteriormente para que possa efetivar a gravação na tabela. 
+# Configuração do ambiente
 
-Propor solução utilizando padrões e funcionalidades JavaEE.
+* Banco de dados
 
-### Arquitetura e documentação
+Para criação do banco de dados e tabela, basta executar o script create.sql localizado no diretório raiz do projeto.
 
-No arquivo README do projeto explique o funcionamento e a arquitetura da solução adotada na sua implementação. Descreva também os passos para executar corretamente seu projeto.
+Antes de inicializar o server WildFly, referencie o arquivo standalone-full.xml para que ele utilize as configurações de mensageria do servidor já declaradas.
 
-### Avaliação
+* WildFly
 
-Entre os critérios de avaliação estão:
+Para executar a aplicação, é necessário configurar o data source no wildfly com as suas credenciais de acesso.
 
-* Facilidade de configuração do projeto
-* Performance
-* Código limpo e organização
-* Documentação de código
-* Documentação do projeto (readme)
-* Arquitetura
-* Boas práticas de desenvolvimento
-* Design Patterns
+Se estiver utilizando o MySQL, inclua o trecho abaixo no arquivo standalone-full.xml, dentro da tag <datasources>. Lembre-se de substituir {user} e {pass} por seu usuário e senha de conexão com o database.
+
+<datasource jndi-name="java:jboss/datasources/fullstackDS" pool-name="fullstackDS" enabled="true">
+ <connection-url>jdbc:mysql://localhost:3306/fullstack_java</connection-url>
+ <driver>mysql</driver>
+ <security>
+  <user-name>{user}</user-name>
+  <password>{pass}</password>
+ </security>
+</datasource>
+
+Também é necessária a inclusão do do trecho abaixo dentro da tag <drivers>
+
+<driver name="mysql" module="com.mysql">
+ <driver-class>com.mysql.jdbc.Driver</driver-class>
+</driver>
+
+A instalação padrão do WildFly não trás o jar do connector My SQL, então é necessário criar uma estrutura de diretórios nomeados mysql/main dentro de <dir_instalacao_wildfly>/dir/modules/system/layers/base/com e incluir os seguintes arquivos:
+
+  - module.xml
+  - mysql-connector-java-5.1.39-bin.jar
+
+Ambos arquivos estão dentro do diretório conf-wildfly que se encontra na raiz do projeto.
+
+Obs. Apenas para referência, no diretório conf-wildfly que se encontra na raiz do projeto, existe uma cópia do arquivo standalone-full.xml usado no desenvolvimento do projeto. É importante frisar que ao ser inicializado, o Wildfly utilizará por padrão as configurações do arquivo standalone.xml. Nesse caso, acho válido deixá-lo com o mesmo conteudo do standalone-full.xml não somente por conta das configurações de data source, mas também pelos outros recursos JEE cujo gerenciamento fica a cargo do server (mensageria, etc).

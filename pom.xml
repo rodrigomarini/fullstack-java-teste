@@ -52,18 +52,18 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- JPA e MYSQL -->
+		<!-- JPA, HIBERNATE e MYSQL -->
 		<dependency>
 			<groupId>org.hibernate.javax.persistence</groupId>
 			<artifactId>hibernate-jpa-2.1-api</artifactId>
 			<version>1.0.0.Draft-16</version>
 			<scope>provided</scope>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.35</version>
+			<version>5.1.39</version>
 		</dependency>
 
 		<!-- JTA -->
