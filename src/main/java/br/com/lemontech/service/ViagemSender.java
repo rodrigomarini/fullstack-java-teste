@@ -31,7 +31,7 @@ public class ViagemSender {
 
 	@Inject
 	private JMSContext context;
-
+	
 	@Resource(lookup="java:/jms/queues/persist")
 	private Destination queue;
 
@@ -44,7 +44,7 @@ public class ViagemSender {
             connection = connectionFactory.createConnection();
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         } catch (JMSException e) {
-            e.printStackTrace();
+        	logger.error("Problema ao inicializar JMS",e);
             throw new RuntimeException(e);
         }
     }
@@ -55,7 +55,7 @@ public class ViagemSender {
             try {
                 connection.close();
             } catch (JMSException e) {
-                e.printStackTrace();
+            	logger.error("Problema ao finalizar JMS",e);
             }
         }
     }
