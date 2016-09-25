@@ -7,7 +7,7 @@ Resumidamente, o fluxo básico consiste em consumir os dados do serviço, efetua
 *  Visualizar o conteudo retornado pelo ws, além de um status adicional por registro com intuito de identificar se todos os objetos da hierarquia daquele registro (id solicitação) foram retornados pelo serviço consumido.
 * Executar por demanda novas chamadas ao serviço, navegando pelas telas de listagem através de páginação (20 registros por página)
 
-Após cada requisição, além de serem listados na tela, os dados são imediatamente encaminhados a uma fila responsável por entregar por meio de mensageria, os registros ao componente de persistência.
+Após cada requisição, além de serem listados na tela, os dados são imediatamente encaminhados a uma fila responsável por entregar os registros ao componente de persistência por meio de mensageria.
 
 # Arquitetura do Sistema
 
@@ -17,7 +17,6 @@ Para se beneficiar de um ambiente transacional totalmente gerenciado pelo servid
 ### Tecnologias
 
 * JDK 8
-* JEE 7
 * CDI 1.2
 * JTA 1.2
 * JPA 2.1
@@ -47,6 +46,7 @@ Para executar a aplicação, é necessário configurar o data source no wildfly 
 
 Se estiver utilizando o MySQL, inclua o trecho abaixo no arquivo standalone-full.xml, dentro da tag <datasources>. Lembre-se de substituir {user} e {pass} por seu usuário e senha de conexão com o database.
 
+```
 <datasource jndi-name="java:jboss/datasources/fullstackDS" pool-name="fullstackDS" enabled="true">
  <connection-url>jdbc:mysql://localhost:3306/fullstack_java</connection-url>
  <driver>mysql</driver>
@@ -55,12 +55,15 @@ Se estiver utilizando o MySQL, inclua o trecho abaixo no arquivo standalone-full
   <password>{pass}</password>
  </security>
 </datasource>
+```
 
 Também é necessária a inclusão do do trecho abaixo dentro da tag <drivers>
 
+```
 <driver name="mysql" module="com.mysql">
  <driver-class>com.mysql.jdbc.Driver</driver-class>
 </driver>
+```
 
 A instalação padrão do WildFly não trás o jar do connector My SQL, então é necessário criar uma estrutura de diretórios nomeados mysql/main dentro de <dir_instalacao_wildfly>/dir/modules/system/layers/base/com e incluir os seguintes arquivos:
 
